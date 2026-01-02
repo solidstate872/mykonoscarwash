@@ -57,12 +57,13 @@ html, body {
     transition: background-color 0.3s ease;
 }
 
+/* Invert — forced pure colors */
 .invert-background {
-    background-color: white;
-    color: black;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 .invert-background .bar {
-    background-color: black;
+    background-color: #000000 !important;
 }
 
 /* QR styling */
@@ -221,7 +222,6 @@ new QRCode(document.getElementById("qrTip"), {
     width: 85,
     height: 85
 });
-
 new QRCode(document.getElementById("qrBtn"), {
     text: url,
     width: 85,
@@ -302,18 +302,23 @@ infoOverlay.addEventListener('click', e => {
     if (e.target === infoOverlay) closeBtn.click();
 });
 
-/* Mobile-only auto invert pulse */
+/* Mobile-only auto invert — FIXED without breaking anything */
 const isTouchDevice =
     'ontouchstart' in window ||
     navigator.maxTouchPoints > 0;
 
 if (isTouchDevice) {
+    document.body.classList.remove('invert-background');
     let inverted = false;
-    setInterval(() => {
-        inverted = !inverted;
-        document.body.classList.toggle('invert-background', inverted);
-    }, 6000);
+
+    setTimeout(() => {
+        setInterval(() => {
+            inverted = !inverted;
+            document.body.classList.toggle('invert-background', inverted);
+        }, 6000);
+    }, 2000);
 }
 </script>
+
 </body>
 </html>
