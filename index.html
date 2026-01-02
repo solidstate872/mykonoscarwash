@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mykonos Carwash</title>
+
 <style>
 html, body {
     margin: 0;
@@ -18,6 +19,7 @@ html, body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    transition: background-color 0.6s ease, color 0.6s ease;
 }
 
 /* Landing page text */
@@ -85,12 +87,14 @@ html, body {
     height: 92px !important;
 }
 
+/* Video */
 #videoContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     display: none;
 }
+
 #videoPlayer {
     position: absolute;
     top: 0; left: 0;
@@ -175,7 +179,6 @@ html, body {
     z-index: 20;
     pointer-events: none;
     user-select: none;
-    font-weight: 300;
 }
 </style>
 </head>
@@ -212,24 +215,17 @@ html, body {
 <script>
 const url = "https://www.facebook.com/mykonoscarwash/";
 
-/* Landing QR */
+/* QR codes */
 new QRCode(document.getElementById("qrTip"), {
     text: url,
     width: 85,
-    height: 85,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
+    height: 85
 });
 
-/* Video QR */
 new QRCode(document.getElementById("qrBtn"), {
     text: url,
     width: 85,
-    height: 85,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
+    height: 85
 });
 
 const startBar = document.getElementById('startBar');
@@ -242,13 +238,17 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 const infoOverlay = document.getElementById('infoOverlay');
 const closeBtn = document.querySelector('.closeBtn');
 
-startBar.addEventListener('mouseover', () => document.body.classList.add('invert-background'));
-startBar.addEventListener('mouseout', () => document.body.classList.remove('invert-background'));
+/* Desktop hover invert */
+startBar.addEventListener('mouseover', () => {
+    document.body.classList.add('invert-background');
+});
+startBar.addEventListener('mouseout', () => {
+    document.body.classList.remove('invert-background');
+});
 
 function startVideoExperience() {
     videoContainer.style.display = 'block';
-    video.play().catch(err => console.log("Autoplay blocked:", err));
-
+    video.play().catch(() => {});
     startBar.style.display = 'none';
     document.querySelector('.welcome').style.display = 'none';
     document.querySelector('.note').style.display = 'none';
@@ -258,7 +258,9 @@ function startVideoExperience() {
 startBar.addEventListener('click', startVideoExperience);
 qrTip.addEventListener('click', startVideoExperience);
 
-qrBtn.addEventListener('click', () => infoOverlay.style.display = 'flex');
+qrBtn.addEventListener('click', () => {
+    infoOverlay.style.display = 'flex';
+});
 
 videoContainer.addEventListener('click', e => {
     if (e.target !== qrBtn && e.target !== fullscreenBtn) {
@@ -270,15 +272,12 @@ fullscreenBtn.addEventListener('click', () => {
     const req =
         videoContainer.requestFullscreen ||
         videoContainer.webkitRequestFullscreen ||
-        videoContainer.msRequestFullscreen ||
-        videoContainer.mozRequestFullScreen;
+        videoContainer.msRequestFullscreen;
     if (req) req.call(videoContainer);
 });
 
 document.addEventListener('fullscreenchange', toggleUI);
 document.addEventListener('webkitfullscreenchange', toggleUI);
-document.addEventListener('mozfullscreenchange', toggleUI);
-document.addEventListener('MSFullscreenChange', toggleUI);
 
 function toggleUI() {
     const f = document.fullscreenElement || document.webkitFullscreenElement;
@@ -303,11 +302,18 @@ infoOverlay.addEventListener('click', e => {
     if (e.target === infoOverlay) closeBtn.click();
 });
 
-document.addEventListener('keydown', e => {
-    if (e.ctrlKey && e.key.toLowerCase() === 'g') {
-        grid.style.display = grid.style.display === 'none' ? 'block' : 'none';
-    }
-});
+/* Mobile-only auto invert pulse */
+const isTouchDevice =
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0;
+
+if (isTouchDevice) {
+    let inverted = false;
+    setInterval(() => {
+        inverted = !inverted;
+        document.body.classList.toggle('invert-background', inverted);
+    }, 6000);
+}
 </script>
 </body>
 </html>
